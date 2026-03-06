@@ -1,0 +1,154 @@
+
+      globals.css
+      export interface Campaign {
+  id: string
+  name: string
+  status: "active" | "paused" | "completed"
+  budget: number
+  impressions: number
+}
+import { create } from "zustand"
+import { Campaign } from "../types/campaign"
+
+interface CampaignState {
+  campaigns: Campaign[]
+  addCampaign: (campaign: Campaign) => void
+}
+
+export const useCampaignStore = create<CampaignState>((set) => ({
+  campaigns: [],
+
+  addCampaign: (campaign) =>
+    set((state) => ({
+      campaigns: [...state.campaigns, campaign],
+    })),
+}))
+import Sidebar from "./Sidebar"
+import Header from "./Header"
+
+export default function DashboardLayout({ children }: any) {
+  return (
+    <div className="flex h-screen">
+      <Sidebar />
+
+      <div className="flex-1 flex flex-col">
+        <Header />
+
+        <main className="p-6 bg-gray-100 flex-1 overflow-y-auto">
+          {children}
+        </main>
+      </div>
+    </div>
+  )
+}
+import Link from "next/link"
+
+export default function Sidebar() {
+  return (
+    <div className="w-64 bg-black text-white p-5">
+      <h1 className="text-xl font-bold mb-6">SaaS Dashboard</h1>
+
+      <nav className="flex flex-col gap-3">
+        <Link href="/">Dashboard</Link>
+        <Link href="/campaigns">Campaigns</Link>
+      </nav>
+    </div>
+  )
+}
+"use client"
+
+import { useCampaignStore } from "../../store/campaignStore"
+import CampaignCard from "../../components/campaigns/CampaignCard"
+
+export default function CampaignPage() {
+  const { campaigns } = useCampaignStore()
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-6">Campaigns</h2>
+
+      <div className="grid grid-cols-3 gap-6">
+        {campaigns.map((campaign) => (
+          <CampaignCard key={campaign.id} campaign={campaign} />
+        ))}
+      </div>
+    </div>
+  )
+}
+import Link from "next/link"
+import { Campaign } from "../../types/campaign"
+
+export default function CampaignCard({ campaign }: { campaign: Campaign }) {
+  return (
+    <Link href={`/campaigns/${campaign.id}`}>
+      <div className="bg-white shadow rounded-lg p-4 hover:shadow-lg">
+        <h3 className="font-bold">{campaign.name}</h3>
+
+        <p>Status: {campaign.status}</p>
+        <p>Budget: ${campaign.budget}</p>
+        <p>Impressions: {campaign.impressions}</p>
+      </div>
+    </Link>
+  )
+}
+"use client"
+
+import { useParams } from "next/navigation"
+import { useCampaignStore } from "../../../store/campaignStore"
+import JobSimulator from "../../../components/simulation/JobSimulator"
+
+export default function CampaignDetail() {
+  const { id } = useParams()
+  const { campaigns } = useCampaignStore()
+
+  const campaign = campaigns.find((c) => c.id === id)
+
+  if (!campaign) return <p>Campaign not found</p>
+
+  return (
+    <div>
+      <h1 className="text-3xl font-bold">{campaign.name}</h1>
+
+      <p>Status: {campaign.status}</p>
+      <p>Budget: ${campaign.budget}</p>
+
+      <JobSimulator />
+    </div>
+  )
+}
+"use client"
+
+import { useState } from "react"
+
+export default function JobSimulator() {
+  const [progress, setProgress] = useState(0)
+
+  const startSimulation = () => {
+    let value = 0
+
+    const interval = setInterval(() => {
+      value += 10
+      setProgress(value)
+
+      if (value >= 100) clearInterval(interval)
+    }, 500)
+  }
+
+  return (
+    <div className="mt-8 p-5 bg-white rounded shadow">
+      <h3 className="font-bold mb-3">Job Simulation</h3>
+
+      <button
+        onClick={startSimulation}
+        className="bg-blue-500 text-white px-4 py-2 rounded"
+      >
+        Run Simulation
+      </button>
+
+      <div className="mt-4">
+        Progress: {progress}%
+      </div>
+    </div>
+  )
+}
+
