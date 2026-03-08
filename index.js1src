@@ -1,0 +1,32 @@
+.tsx
+│saas-dashboard/
+│
+├── app/
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── campaigns/
+│   │     ├── page.tsx
+│   │     └── [id]/page.tsx
+│
+├── components/
+│   ├── layout/
+│   │     ├── Sidebar.tsx
+│   │     ├── Header.tsx
+│   │     └── DashboardLayout.tsx
+│   │
+│   ├── campaigns/
+│   │     ├── CampaignCard.tsx
+│   │     └── CampaignList.tsx
+│   │
+│   └── simulation/
+│         └── JobSimulator
+├── store/
+│     campaignStore.ts
+│
+├── lib/
+│     api.ts
+│
+├── types/
+│     campaign.ts
+│
+└── styles/
